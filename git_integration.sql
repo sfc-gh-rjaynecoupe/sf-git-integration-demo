@@ -1,37 +1,28 @@
 -- Use role that has permissions to create API Integration
 USE ROLE ACCOUNTADMIN;
 
--- Create and use the warehouse that your session
-CREATE WAREHOUSE IF NOT EXISTS KAMESH_DEMOS_S;
-USE WAREHOUSE KAMESH_DEMOS_S;
+-- Craete and use the warehouse that your session
+CREATE OR REPLACE WAREHOUSE GIT_DEMOS_S WAREHOUSE_SIZE = SMALL;
+USE WAREHOUSE GIT_DEMOS_S;
 
 -- Database to hold all the objects
-CREATE OR REPLACE DATABASE KAMESH_GIT_REPOS;
+CREATE OR REPLACE DATABASE GIT_REPOS;
 -- Use the created database
-USE DATABASE KAMESH_GIT_REPOS;
+USE DATABASE GIT_REPOS;
 
 -- Create schema to hold all github repositories
 CREATE OR REPLACE SCHEMA GITHUB;
 USE SCHEMA GITHUB;
 
--- Create the API Integration
-CREATE API INTEGRATION IF NOT EXISTS  kameshsampath_git
+CREATE OR REPLACE API INTEGRATION  "sfc-gh-rjaynecoupe_git"
     API_PROVIDER = git_https_api
     -- allowed orgs and repositories
-    API_ALLOWED_PREFIXES = ('https://github.com/kameshsampath')
+    API_ALLOWED_PREFIXES = ('https://github.com/sfc-gh-rjaynecoupe')
     ENABLED = TRUE;
 
--- CREATE OR REPLACE SECRET my_gh_token
---   TYPE = password
---   USERNAME = 'kameshsampath'
---   PASSWORD = 'ghp_token';
-
--- Create Repository - this will be a stage in Snowflake
-CREATE GIT REPOSITORY IF NOT EXISTS git_integration_demo
-    API_INTEGRATION = kameshsampath_git
-    -- ADD secret to use private repositories
-    -- GIT_CREDENTIALS = my_gh_token
-    ORIGIN = 'https://github.com/kameshsampath/sf-git-integration-demo.git';
+CREATE OR REPLACE GIT REPOSITORY git_integration_demo
+    API_INTEGRATION = "sfc-gh-rjaynecoupe_git"
+    ORIGIN = 'https://github.com/sfc-gh-rjaynecoupe/sf-git-integration-demo.git';
 
 -- Refresh repoistory
 ALTER GIT REPOSITORY git_integration_demo FETCH;
